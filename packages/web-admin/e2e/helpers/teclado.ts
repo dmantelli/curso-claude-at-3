@@ -3,6 +3,9 @@ import type { Locator, Page } from '@playwright/test'
 /** Pausa entre pulsaciones para que el vídeo sea legible (ms). */
 export const PAUSA_TECLA = 120
 
+/** Pausa al terminar cada tramo del recorrido para que el vídeo se pueda seguir (ms). */
+export const PAUSA_SECCION = 600
+
 /** Cuenta eventos de puntero (ratón/táctil). El teclado nunca los genera. */
 export async function registrar_uso_de_raton(page: Page): Promise<void> {
   await page.addInitScript(() => {
