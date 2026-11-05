@@ -81,7 +81,7 @@ Hacer accesible el formulario de creación/edición de platos de `web-admin` seg
 
 **Cierre**
 
-- [ ] 22. Documentar en `docs/arquitectura-frontend.md` cómo ejecutar tests de componente y e2e/vídeo y las convenciones de accesibilidad del formulario; ejecutar todo (`npm test`, tests de web-admin, e2e, `npm run build -w @resttek/web-admin`) (`docs/arquitectura-frontend.md`, ~8 min)
+- [x] 22. Documentar en `docs/arquitectura/arquitectura-frontend.md` cómo ejecutar tests de componente y e2e/vídeo y las convenciones de accesibilidad del formulario; ejecutar todo (`npm test`, tests de web-admin, e2e, `npm run build -w @resttek/web-admin`) (`docs/arquitectura-frontend.md`, ~8 min)
 
 ## Criterios de aceptación
 
