@@ -151,3 +151,12 @@ input[aria-invalid='true'] {
   margin: 0;
   padding-left: 20px;
 }
+
+/* Foco visible (WCAG 2.4.7 / 2.4.11): sobrescribe `outline: none` de los estilos globales */
+:host a:focus-visible,
+:host button:focus-visible,
+:host .form-control:focus-visible,
+:host #resumen-errores:focus-visible {
+  outline: 3px solid var(--green-light);
+  outline-offset: 2px;
+}
