@@ -44,3 +44,27 @@ describe('DishFormComponent (humo)', () => {
     expect(el.textContent).toContain('Nuevo plato')
   })
 })
+
+function controlDeEtiqueta(el: HTMLElement, texto: string): HTMLElement | null {
+  const label = Array.from(el.querySelectorAll('label')).find(l => l.textContent?.trim().startsWith(texto))
+  const id = label?.getAttribute('for')
+  return id ? el.querySelector<HTMLElement>(`#${id}`) : null
+}
+
+describe('DishFormComponent - etiquetas', () => {
+  it.each([
+    ['Nombre del plato', 'INPUT'],
+    ['Precio', 'INPUT'],
+    ['Categoría', 'SELECT'],
+    ['Disponible', 'SELECT'],
+    ['Descripción', 'TEXTAREA']
+  ])('el campo "%s" tiene un <label for> asociado a un %s', async (texto, tag) => {
+    const { el } = await crearFormulario()
+    expect(controlDeEtiqueta(el, texto)?.tagName).toBe(tag)
+  })
+
+  it('no quedan etiquetas falsas (div.fake-label)', async () => {
+    const { el } = await crearFormulario()
+    expect(el.querySelector('.fake-label')).toBeNull()
+  })
+})

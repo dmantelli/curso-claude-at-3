@@ -53,7 +53,7 @@ Hacer accesible el formulario de creación/edición de platos de `web-admin` seg
 
 **Formulario accesible (cada tarea: test rojo → implementación → verde)**
 
-- [ ] 3. Etiquetas: test que verifica `getByLabelText` para Nombre, Precio, Categoría, Disponible, Descripción; sustituir los `div.fake-label` por `<label for>` con `id` únicos en cada control (`dish-form.component.spec.ts`, `.html`, ~8 min)
+- [x] 3. Etiquetas: test que verifica `getByLabelText` para Nombre, Precio, Categoría, Disponible, Descripción; sustituir los `div.fake-label` por `<label for>` con `id` únicos en cada control (`dish-form.component.spec.ts`, `.html`, ~8 min)
 - [ ] 4. Encabezados y landmarks: test de `h1` con el título de página y `h2` "Ingredientes del plato"; sustituir `fake-title`/`fake-subtitle`, dar `aria-label` "Volver a la lista de platos" al enlace de volver y `aria-hidden="true"` a los iconos decorativos (`.html`, `.css`, ~8 min)
 - [ ] 5. Envío por teclado: test de que existe un `<form>` con `<button type="submit">Guardar`, de que `submit` (Enter en un campo) llama a `onSubmit()` y de que "Cancelar" es un enlace (`<a>`) enfocable; reemplazar los `div.btn` (`.html`, `.ts`, ~10 min)
 - [ ] 6. Botón "Añadir ingrediente": test de que es `<button type="button">` con nombre accesible "Añadir ingrediente", de que Enter/Espacio lo activa y de que el select de ingrediente y la cantidad tienen label (visible u oculta) ("Ingrediente", "Cantidad") (`.html`, `.css`, ~8 min)

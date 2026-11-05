@@ -119,12 +119,6 @@ select.form-control {
   color: var(--text-primary);
 }
 
-.fake-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
 .fake-subtitle {
   font-size: 14px;
   font-weight: 600;
