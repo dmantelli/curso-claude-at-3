@@ -48,7 +48,7 @@ Hacer accesible el formulario de creación/edición de platos de `web-admin` seg
 
 **Infraestructura de tests**
 
-- [ ] 1. Configurar el runner de tests de `web-admin` (target `test` con `@angular/build:unit-test` + vitest + jsdom) y un test de humo de `DishFormComponent` que lo monte con `HttpClientTestingModule`/stubs y `provideRouter([])`; rojo = no existe runner (`packages/web-admin/angular.json`, `package.json`, `dish-form.component.spec.ts`, ~10 min)
+- [x] 1. Configurar el runner de tests de `web-admin` (target `test` con `@angular/build:unit-test` + vitest + jsdom) y un test de humo de `DishFormComponent` que lo monte con `HttpClientTestingModule`/stubs y `provideRouter([])`; rojo = no existe runner (`packages/web-admin/angular.json`, `package.json`, `dish-form.component.spec.ts`, ~10 min)
 - [ ] 2. Instalar `@playwright/test` y `@axe-core/playwright`, descargar chromium y crear `playwright.config.ts` (`webServer` para API :3000 y admin :4200, `video: 'on'`, `baseURL`); rojo = un spec mínimo que abre el login y falla hasta tener config (`packages/web-admin/playwright.config.ts`, `package.json`, ~10 min)
 
 **Formulario accesible (cada tarea: test rojo → implementación → verde)**
