@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { afterNextRender, Component, computed, ElementRef, inject, Injector, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterLink } from '@angular/router'
 import { LucideAngularModule } from 'lucide-angular'
@@ -26,6 +26,8 @@ export class DishFormComponent implements OnInit {
   readonly ingredientStore = inject(IngredientStore)
   private readonly route = inject(ActivatedRoute)
   private readonly router = inject(Router)
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef)
+  private readonly injector = inject(Injector)
 
   isEditing = false
   dishId: string | null = null
@@ -33,6 +35,14 @@ export class DishFormComponent implements OnInit {
   loading = signal(false)
   error = signal<string | null>(null)
   errors = signal<FormErrors>({})
+
+  readonly resumenErrores = computed(() => {
+    const e = this.errors()
+    return [
+      ...(e.name ? [{ id: 'dish-name', mensaje: e.name }] : []),
+      ...(e.price ? [{ id: 'dish-price', mensaje: e.price }] : [])
+    ]
+  })
 
   categories: DishCategory[] = ['entrante', 'principal', 'postre', 'bebida']
 
@@ -144,11 +154,21 @@ export class DishFormComponent implements OnInit {
     })
   }
 
+  enfocarCampo(event: Event, id: string): void {
+    event.preventDefault()
+    this.host.nativeElement.querySelector<HTMLElement>(`#${id}`)?.focus()
+  }
+
   async onSubmit(): Promise<void> {
     this.error.set(null)
     const errors = this.validate()
     this.errors.set(errors)
-    if (Object.keys(errors).length > 0) return
+    if (Object.keys(errors).length > 0) {
+      afterNextRender(() => this.host.nativeElement.querySelector<HTMLElement>('#resumen-errores')?.focus(), {
+        injector: this.injector
+      })
+      return
+    }
     this.loading.set(true)
     try {
       if (this.isEditing && this.dishId) {

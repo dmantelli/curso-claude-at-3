@@ -285,3 +285,44 @@ describe('DishFormComponent - presentación de errores', () => {
     expect(controlDeEtiqueta(el, 'Precio')?.getAttribute('aria-invalid')).toBe('true')
   })
 })
+
+describe('DishFormComponent - resumen de errores y foco', () => {
+  async function enviarVacio() {
+    const ctx = await crearFormulario()
+    await ctx.fixture.componentInstance.onSubmit()
+    ctx.fixture.detectChanges()
+    await ctx.fixture.whenStable()
+    return ctx
+  }
+
+  it('sin errores no hay resumen', async () => {
+    const { el } = await crearFormulario()
+    expect(el.querySelector('#resumen-errores')).toBeNull()
+  })
+
+  it('tras enviar inválido aparece un resumen con role="alert" y tabindex="-1" que recibe el foco', async () => {
+    const { el } = await enviarVacio()
+    const resumen = el.querySelector<HTMLElement>('#resumen-errores')!
+    expect(resumen.getAttribute('role')).toBe('alert')
+    expect(resumen.getAttribute('tabindex')).toBe('-1')
+    expect(document.activeElement).toBe(resumen)
+  })
+
+  it('el resumen tiene un enlace por cada campo erróneo', async () => {
+    const { el } = await enviarVacio()
+    const enlaces = Array.from(el.querySelectorAll('#resumen-errores a')).map(a => [
+      a.textContent?.trim(),
+      a.getAttribute('href')
+    ])
+    expect(enlaces).toEqual([
+      ['El nombre es obligatorio', '#dish-name'],
+      ['El precio debe ser mayor que 0', '#dish-price']
+    ])
+  })
+
+  it('activar un enlace del resumen enfoca el campo', async () => {
+    const { el } = await enviarVacio()
+    el.querySelector<HTMLAnchorElement>('#resumen-errores a[href="#dish-price"]')!.click()
+    expect(document.activeElement).toBe(controlDeEtiqueta(el, 'Precio'))
+  })
+})

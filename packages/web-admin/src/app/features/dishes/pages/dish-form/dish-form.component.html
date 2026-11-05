@@ -12,6 +12,17 @@
     <div class="alert-error">{{ error() }}</div>
   }
 
+  @if (resumenErrores().length > 0) {
+    <div id="resumen-errores" class="alert-error" role="alert" tabindex="-1">
+      <h2>Revisa el formulario</h2>
+      <ul>
+        @for (e of resumenErrores(); track e.id) {
+          <li><a [href]="'#' + e.id" (click)="enfocarCampo($event, e.id)">{{ e.mensaje }}</a></li>
+        }
+      </ul>
+    </div>
+  }
+
   <form class="card form-card" novalidate (ngSubmit)="onSubmit()">
     <div class="form-grid">
       <div class="form-group">
