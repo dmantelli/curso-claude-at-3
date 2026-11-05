@@ -8,6 +8,11 @@ import { DishService } from '../../services/dish.service'
 import { IngredientStore } from '../../../ingredients/store/ingredient.store'
 import type { CreateDishDto, DishCategory } from '../../models/dish.model'
 
+export interface FormErrors {
+  name?: string
+  price?: string
+}
+
 @Component({
   selector: 'app-dish-form',
   standalone: true,
@@ -27,6 +32,7 @@ export class DishFormComponent implements OnInit {
   restaurantId: string = ''
   loading = signal(false)
   error = signal<string | null>(null)
+  errors = signal<FormErrors>({})
 
   categories: DishCategory[] = ['entrante', 'principal', 'postre', 'bebida']
 
@@ -121,8 +127,18 @@ export class DishFormComponent implements OnInit {
     return ingredient ? `${ingredient.name} (${ingredient.unit})` : ingredientId
   }
 
+  validate(): FormErrors {
+    const errors: FormErrors = {}
+    if (!this.form.name?.trim()) errors.name = 'El nombre es obligatorio'
+    if (!(Number(this.form.price) > 0)) errors.price = 'El precio debe ser mayor que 0'
+    return errors
+  }
+
   async onSubmit(): Promise<void> {
     this.error.set(null)
+    const errors = this.validate()
+    this.errors.set(errors)
+    if (Object.keys(errors).length > 0) return
     this.loading.set(true)
     try {
       if (this.isEditing && this.dishId) {

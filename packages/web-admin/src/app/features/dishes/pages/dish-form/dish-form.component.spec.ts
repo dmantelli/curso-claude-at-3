@@ -1,6 +1,6 @@
 import { importProvidersFrom, provideZonelessChangeDetection, signal } from '@angular/core'
 import { TestBed, type ComponentFixture } from '@angular/core/testing'
-import { ActivatedRoute, provideRouter } from '@angular/router'
+import { ActivatedRoute, Router, provideRouter } from '@angular/router'
 import { LucideAngularModule, ChevronLeft, Plus, Trash2 } from 'lucide-angular'
 import { DishFormComponent } from './dish-form.component'
 import { DishStore } from '../../store/dish.store'
@@ -192,5 +192,53 @@ describe('DishFormComponent - quitar ingrediente', () => {
     fixture.detectChanges()
     expect(fixture.componentInstance.form.ingredients).toEqual([])
     expect(el.querySelector('ul.ingredient-chips')).toBeNull()
+  })
+})
+
+describe('DishFormComponent - validación en cliente', () => {
+  it.each([
+    ['', 'El nombre es obligatorio'],
+    ['   ', 'El nombre es obligatorio']
+  ])('validate() rechaza el nombre %j', async (nombre, mensaje) => {
+    const { fixture } = await crearFormulario()
+    fixture.componentInstance.form.name = nombre
+    fixture.componentInstance.form.price = 5
+    expect(fixture.componentInstance.validate()).toEqual({ name: mensaje })
+  })
+
+  it.each([0, -1, null])('validate() rechaza el precio %s', async precio => {
+    const { fixture } = await crearFormulario()
+    fixture.componentInstance.form.name = 'Tarta'
+    fixture.componentInstance.form.price = precio as unknown as number
+    expect(fixture.componentInstance.validate()).toEqual({ price: 'El precio debe ser mayor que 0' })
+  })
+
+  it('validate() devuelve ambos errores con el formulario vacío y ninguno si es válido', async () => {
+    const { fixture } = await crearFormulario()
+    expect(Object.keys(fixture.componentInstance.validate())).toEqual(['name', 'price'])
+    fixture.componentInstance.form.name = 'Tarta'
+    fixture.componentInstance.form.price = 4.5
+    expect(fixture.componentInstance.validate()).toEqual({})
+  })
+
+  it('onSubmit() con errores no llama al store y los guarda en el signal errors', async () => {
+    const { fixture, store } = await crearFormulario()
+    await fixture.componentInstance.onSubmit()
+    expect(store.create).not.toHaveBeenCalled()
+    expect(fixture.componentInstance.errors()).toEqual({
+      name: 'El nombre es obligatorio',
+      price: 'El precio debe ser mayor que 0'
+    })
+  })
+
+  it('onSubmit() válido guarda el plato y limpia los errores', async () => {
+    const { fixture, store } = await crearFormulario()
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true)
+    await fixture.componentInstance.onSubmit()
+    fixture.componentInstance.form.name = 'Tarta'
+    fixture.componentInstance.form.price = 4.5
+    await fixture.componentInstance.onSubmit()
+    expect(store.create).toHaveBeenCalledTimes(1)
+    expect(fixture.componentInstance.errors()).toEqual({})
   })
 })
