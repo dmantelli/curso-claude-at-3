@@ -139,7 +139,7 @@ select.form-control {
 .field-error {
   margin: 6px 0 0;
   font-size: 13px;
-  color: var(--red);
+  color: var(--red-text);
 }
 
 input[aria-invalid='true'] {
@@ -147,6 +147,7 @@ input[aria-invalid='true'] {
 }
 
 #resumen-errores h2 {
+  color: var(--red-text);
   font-size: 14px;
   margin: 0 0 6px;
 }
@@ -157,6 +158,10 @@ input[aria-invalid='true'] {
 }
 
 /* Foco visible (WCAG 2.4.7 / 2.4.11): sobrescribe `outline: none` de los estilos globales */
+:host {
+  --red-text: #f87171; /* contraste >= 4.5:1 sobre fondos oscuros (WCAG 1.4.3) */
+}
+
 :host a:focus-visible,
 :host button:focus-visible,
 :host .form-control:focus-visible,

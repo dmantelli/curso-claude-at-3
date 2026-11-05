@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright'
 import { test, expect, type Page } from '@playwright/test'
 import { iniciar_sesion, primer_restaurante_id } from './helpers/sesion'
 
@@ -65,5 +66,25 @@ test.describe('Formulario de platos - tamaño de los objetivos (WCAG 2.5.8)', ()
       expect(caja!.width, `${nombre}: ancho`).toBeGreaterThanOrEqual(24)
       expect(caja!.height, `${nombre}: alto`).toBeGreaterThanOrEqual(24)
     }
+  })
+})
+
+test.describe('Formulario de platos - axe WCAG 2.2 AA', () => {
+  const auditar = async (page: Page) =>
+    (await new AxeBuilder({ page }).include('app-dish-form').withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze()).violations
+      .map(v => `${v.id}: ${v.nodes.map(n => n.target.join(' ')).join(' | ')}`)
+
+  test('sin violaciones en el estado inicial', async ({ page }) => {
+    await abrir_formulario_nuevo(page)
+    expect(await auditar(page)).toEqual([])
+  })
+
+  test('sin violaciones con errores de validación e ingredientes', async ({ page }) => {
+    await abrir_formulario_nuevo(page)
+    await page.locator('#new-ingredient').selectOption({ index: 1 })
+    await page.getByRole('button', { name: 'Añadir ingrediente' }).click()
+    await page.getByRole('button', { name: 'Guardar' }).click()
+    await expect(page.locator('#resumen-errores')).toBeVisible()
+    expect(await auditar(page)).toEqual([])
   })
 })
