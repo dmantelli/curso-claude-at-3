@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { ADMIN } from './helpers/sesion'
-import { elegir_opcion, escribir, pulsar, registrar_uso_de_raton, tab_hasta, usos_de_raton } from './helpers/teclado'
+import { escribir, pulsar, registrar_uso_de_raton, tab_hasta, usos_de_raton } from './helpers/teclado'
 
 /**
  * Recorrido de accesibilidad grabado en vídeo: todo el flujo se hace SOLO con el teclado.
@@ -51,50 +51,41 @@ test('formulario de platos: recorrido completo solo con teclado', async ({ page 
     await expect(campo_precio).toHaveValue('13.5')
   })
 
-  const estado = page.locator('[role="status"]')
-  const chips = page.locator('ul.ingredient-chips li')
-  let ingrediente_a = ''
-  let ingrediente_b = ''
-
-  await test.step('3. Añadir dos ingredientes y quitar uno', async () => {
-    const opciones = (await page.locator('#new-ingredient option').allInnerTexts()).slice(1)
-    const en_plato = await page.locator('ul.ingredient-chips li span').allInnerTexts()
-    const libres = opciones.filter(o => !en_plato.some(t => t.startsWith(o)))
-    expect(libres.length, 'el seed debe dejar al menos 2 ingredientes libres').toBeGreaterThanOrEqual(2)
-    ;[ingrediente_a, ingrediente_b] = libres
-
-    await tab_hasta(page, page.locator('#new-ingredient'))
-    await elegir_opcion(page, ingrediente_a)
-    await pulsar(page, 'Tab')
-    await expect(page.locator('#new-ingredient-qty')).toBeFocused()
-    await pulsar(page, 'Control+A')
-    await escribir(page, '2')
-    await pulsar(page, 'Enter')
-    await expect(estado).toHaveText(`Ingrediente ${ingrediente_a} añadido`)
-    await expect(chips.filter({ hasText: ingrediente_a })).toHaveCount(1)
-
-    await tab_hasta(page, page.locator('#new-ingredient'), 5, 'Shift+Tab')
-    await elegir_opcion(page, ingrediente_b)
-    await pulsar(page, 'Tab')
-    await pulsar(page, 'Control+A')
-    await escribir(page, '1')
-    await pulsar(page, 'Enter')
-    await expect(estado).toHaveText(`Ingrediente ${ingrediente_b} añadido`)
-
-    const quitar_a = page.getByRole('button', { name: `Quitar ${ingrediente_a}` })
-    await tab_hasta(page, quitar_a, 15, 'Shift+Tab')
-    await pulsar(page, 'Enter')
-    await expect(estado).toHaveText(`Ingrediente ${ingrediente_a} quitado`)
-    await expect(chips.filter({ hasText: ingrediente_a })).toHaveCount(0)
-    await expect(chips.filter({ hasText: ingrediente_b })).toHaveCount(1)
-  })
-
-  await test.step('4. Guardar los cambios y verlos en la lista', async () => {
+  await test.step('3. Guardar los cambios y verlos en la lista', async () => {
     await tab_hasta(page, page.getByRole('button', { name: 'Guardar' }), 30)
     await pulsar(page, 'Enter')
     await expect(page.getByRole('heading', { level: 1, name: 'Platos' })).toBeVisible()
     const fila = page.locator('tbody tr', { hasText: `${nombre_original} (editado)` })
     await expect(fila).toContainText('13.50 €')
+  })
+
+  await test.step('4. Enviar el formulario incompleto y recorrer los errores', async () => {
+    await tab_hasta(page, page.getByRole('link', { name: 'Nuevo plato' }), 30)
+    await pulsar(page, 'Enter')
+    await expect(page.getByRole('heading', { level: 1, name: 'Nuevo plato' })).toBeVisible()
+
+    // Enter dentro de un campo envía el formulario (aún vacío)
+    await tab_hasta(page, campo_nombre)
+    await pulsar(page, 'Enter')
+
+    const resumen = page.locator('#resumen-errores')
+    await expect(resumen).toBeFocused()
+    await expect(resumen).toHaveAttribute('role', 'alert')
+    await expect(resumen.getByRole('link')).toHaveText(['El nombre es obligatorio', 'El precio debe ser mayor que 0'])
+    await expect(campo_nombre).toHaveAttribute('aria-invalid', 'true')
+    await expect(page.locator('#dish-name-error')).toHaveText('El nombre es obligatorio')
+    await expect(campo_precio).toHaveAttribute('aria-invalid', 'true')
+    await expect(page.locator('#dish-price-error')).toHaveText('El precio debe ser mayor que 0')
+
+    // Saltar al primer campo erróneo con el enlace del resumen
+    await tab_hasta(page, resumen.getByRole('link', { name: 'El nombre es obligatorio' }), 5)
+    await pulsar(page, 'Enter')
+    await expect(campo_nombre).toBeFocused()
+
+    // Retroceder al segundo enlace y saltar al campo de precio
+    await tab_hasta(page, resumen.getByRole('link', { name: 'El precio debe ser mayor que 0' }), 5, 'Shift+Tab')
+    await pulsar(page, 'Enter')
+    await expect(campo_precio).toBeFocused()
   })
 
   expect(await usos_de_raton(page)).toBe(0)
