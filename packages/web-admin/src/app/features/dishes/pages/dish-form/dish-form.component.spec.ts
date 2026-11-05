@@ -155,3 +155,42 @@ describe('DishFormComponent - añadir ingrediente', () => {
     expect(fixture.componentInstance.form.ingredients).toEqual([{ ingredientId: 'i2', quantity: 1 }])
   })
 })
+
+async function anadirIngrediente(
+  fixture: ComponentFixture<DishFormComponent>,
+  el: HTMLElement,
+  id: string,
+  cantidad: number
+): Promise<void> {
+  fixture.componentInstance.newIngredientId = id
+  fixture.componentInstance.newIngredientQty = cantidad
+  el.querySelector<HTMLButtonElement>('button[aria-label="Añadir ingrediente"]')!.click()
+  fixture.detectChanges()
+  await fixture.whenStable()
+}
+
+describe('DishFormComponent - quitar ingrediente', () => {
+  it('los ingredientes se listan en una <ul> con un <li> por ingrediente', async () => {
+    const { fixture, el } = await crearFormulario()
+    await anadirIngrediente(fixture, el, 'i1', 2)
+    await anadirIngrediente(fixture, el, 'i2', 1)
+    expect(el.querySelectorAll('ul.ingredient-chips > li').length).toBe(2)
+  })
+
+  it('cada ingrediente tiene un <button type="button"> "Quitar {nombre}"', async () => {
+    const { fixture, el } = await crearFormulario()
+    await anadirIngrediente(fixture, el, 'i1', 2)
+    const boton = el.querySelector('li button[aria-label="Quitar Tomate (kg)"]')
+    expect(boton?.getAttribute('type')).toBe('button')
+    expect(el.querySelector('.chip-remove[role], div.chip-remove')).toBeNull()
+  })
+
+  it('activar el botón quita el ingrediente', async () => {
+    const { fixture, el } = await crearFormulario()
+    await anadirIngrediente(fixture, el, 'i1', 2)
+    el.querySelector<HTMLButtonElement>('button[aria-label="Quitar Tomate (kg)"]')!.click()
+    fixture.detectChanges()
+    expect(fixture.componentInstance.form.ingredients).toEqual([])
+    expect(el.querySelector('ul.ingredient-chips')).toBeNull()
+  })
+})
