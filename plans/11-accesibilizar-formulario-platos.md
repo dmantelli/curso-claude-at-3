@@ -85,17 +85,17 @@ Hacer accesible el formulario de creación/edición de platos de `web-admin` seg
 
 ## Criterios de aceptación
 
-- [ ] Todo el formulario (campos, añadir/quitar ingredientes, Cancelar, Guardar) se puede completar y enviar solo con teclado; Enter en un campo envía el formulario; el orden de tabulación es lógico y no hay `tabindex` positivos.
-- [ ] Todos los controles tienen nombre accesible (`<label for>` o `aria-label`); no quedan `div` clicables ni `fake-*`.
-- [ ] El foco es siempre visible (`:focus-visible`, contraste ≥ 3:1, ≥ 2 px) y los objetivos miden ≥ 24×24 px.
-- [ ] Enviar el formulario vacío muestra "El nombre es obligatorio" y "El precio debe ser mayor que 0" como texto, con `aria-invalid`/`aria-describedby`, y mueve el foco al resumen de errores; no se hace petición a la API.
-- [ ] Los cambios dinámicos (errores, guardando, ingrediente añadido/quitado) se anuncian vía `role="alert"` / `role="status"`.
-- [ ] axe-core con etiquetas `wcag2a`, `wcag2aa`, `wcag22aa` no reporta violaciones en el formulario (estado inicial y con errores).
-- [ ] Existe un vídeo `.webm` grabado por Playwright (`docs/videos/dish-form-teclado.webm`) en el que, **solo con teclado**, se edita un plato (nombre, precio), se añade y quita un ingrediente, se envía un formulario incompleto mostrando los errores y finalmente se crea un plato correcto que aparece en la lista; el spec no usa `click`, `mouse` ni `fill`.
-- [ ] Cada tarea tiene su test escrito antes que el código (evidencia: test rojo registrado en el commit/mensaje de la tarea y luego verde).
-- [ ] Los tests con vitest pasan (`npm test` de la API y tests de `web-admin`) y el e2e de Playwright pasa.
-- [ ] `npm run build -w @resttek/web-admin` compila sin errores.
-- [ ] eslint y prettier sin errores (ver decisión 3: hoy no están configurados en `web-admin`).
+- [x] Todo el formulario (campos, añadir/quitar ingredientes, Cancelar, Guardar) se puede completar y enviar solo con teclado; Enter en un campo envía el formulario; el orden de tabulación es lógico y no hay `tabindex` positivos.
+- [x] Todos los controles tienen nombre accesible (`<label for>` o `aria-label`); no quedan `div` clicables ni `fake-*`.
+- [x] El foco es siempre visible (`:focus-visible`, contraste ≥ 3:1, ≥ 2 px) y los objetivos miden ≥ 24×24 px.
+- [x] Enviar el formulario vacío muestra "El nombre es obligatorio" y "El precio debe ser mayor que 0" como texto, con `aria-invalid`/`aria-describedby`, y mueve el foco al resumen de errores; no se hace petición a la API.
+- [x] Los cambios dinámicos (errores, guardando, ingrediente añadido/quitado) se anuncian vía `role="alert"` / `role="status"`.
+- [x] axe-core con etiquetas `wcag2a`, `wcag2aa`, `wcag22aa` no reporta violaciones en el formulario (estado inicial y con errores).
+- [x] Existe un vídeo `.webm` grabado por Playwright (`docs/videos/dish-form-teclado.webm`) en el que, **solo con teclado**, se edita un plato (nombre, precio), se añade y quita un ingrediente, se envía un formulario incompleto mostrando los errores y finalmente se crea un plato correcto que aparece en la lista; el spec no usa `click`, `mouse` ni `fill`.
+- [x] Cada tarea tiene su test escrito antes que el código (evidencia: test rojo registrado en el commit/mensaje de la tarea y luego verde).
+- [x] Los tests con vitest pasan (`npm test` de la API y tests de `web-admin`) y el e2e de Playwright pasa.
+- [x] `npm run build -w @resttek/web-admin` compila sin errores.
+- [ ] eslint y prettier sin errores _(no cumplido: no hay eslint ni prettier configurados en `web-admin`; ver decisiones)_.
 
 ## Dudas y decisiones
 
