@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.angular/
+*.db
+*.sqlite
+.DS_Store
+*:Zone.Identifier
+test-results/
+playwright-report/
