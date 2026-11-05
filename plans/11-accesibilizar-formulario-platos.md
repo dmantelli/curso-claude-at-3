@@ -67,7 +67,7 @@ Hacer accesible el formulario de creación/edición de platos de `web-admin` seg
 **Foco visible, contraste y tamaño (WCAG 2.2: 2.4.7, 2.4.11, 1.4.3, 1.4.11, 2.5.8) — verificados en navegador real**
 
 - [x] 13. Test e2e de foco visible: con Tab sobre cada control, `outline` computado ≠ `none` y ≥ 2 px con contraste ≥ 3:1 y no oculto por cabeceras fijas; añadir regla `:focus-visible` global del formulario (`e2e/dish-form.a11y.spec.ts`, `.css`, ~10 min)
-- [ ] 14. Test e2e de tamaño de objetivo: todos los botones/enlaces/chips del formulario miden ≥ 24×24 px; ajustar `btn-sm`, `chip-remove` y `qty-input` (`e2e/dish-form.a11y.spec.ts`, `.css`, ~8 min)
+- [x] 14. Test e2e de tamaño de objetivo: todos los botones/enlaces/chips del formulario miden ≥ 24×24 px; ajustar `btn-sm`, `chip-remove` y `qty-input` (`e2e/dish-form.a11y.spec.ts`, `.css`, ~8 min)
 - [ ] 15. Test e2e con axe (`withTags(['wcag2a','wcag2aa','wcag22aa'])`) en estado inicial y con errores: cero violaciones; corregir lo que salga (contraste de placeholder/`--text-muted`, etc.) (`e2e/dish-form.a11y.spec.ts`, `.css`, ~10 min)
 
 **Vídeo del recorrido solo con teclado (criterio de aceptación)**

@@ -48,3 +48,22 @@ test.describe('Formulario de platos - foco visible', () => {
     }
   })
 })
+
+test.describe('Formulario de platos - tamaño de los objetivos (WCAG 2.5.8)', () => {
+  test('todos los controles interactivos miden al menos 24x24 px', async ({ page }) => {
+    await abrir_formulario_nuevo(page)
+    await page.locator('#new-ingredient').selectOption({ index: 1 })
+    await page.getByRole('button', { name: 'Añadir ingrediente' }).click()
+    await expect(page.getByRole('button', { name: /^Quitar / })).toBeVisible()
+
+    const controles = page.locator('app-dish-form a, app-dish-form button, app-dish-form input, app-dish-form select, app-dish-form textarea')
+    const total = await controles.count()
+    expect(total).toBeGreaterThanOrEqual(12)
+    for (let i = 0; i < total; i++) {
+      const caja = await controles.nth(i).boundingBox()
+      const nombre = await controles.nth(i).evaluate(e => e.getAttribute('aria-label') || e.id || e.textContent?.trim())
+      expect(caja!.width, `${nombre}: ancho`).toBeGreaterThanOrEqual(24)
+      expect(caja!.height, `${nombre}: alto`).toBeGreaterThanOrEqual(24)
+    }
+  })
+})
