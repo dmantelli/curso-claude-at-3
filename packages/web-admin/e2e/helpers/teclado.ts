@@ -31,16 +31,16 @@ export async function escribir(page: Page, texto: string): Promise<void> {
   await page.waitForTimeout(PAUSA_TECLA)
 }
 
-/** Avanza con Tab hasta que el elemento recibe el foco; falla si no se alcanza. */
-export async function tab_hasta(page: Page, destino: Locator, maximo = 40): Promise<void> {
-  for (let i = 0; i < maximo; i++) {
+/** Avanza con Tab (o la tecla indicada, p. ej. Shift+Tab) hasta enfocar el elemento; falla si no se alcanza. */
+export async function tab_hasta(page: Page, destino: Locator, maximo = 40, tecla = 'Tab'): Promise<void> {
+  for (let i = 0; i <= maximo; i++) {
     const enfocado = await destino
       .evaluate(el => el === document.activeElement, undefined, { timeout: 500 })
       .catch(() => false)
     if (enfocado) return
-    await pulsar(page, 'Tab')
+    if (i < maximo) await pulsar(page, tecla)
   }
-  throw new Error(`no se alcanzó el elemento con Tab tras ${maximo} pulsaciones`)
+  throw new Error(`no se alcanzó el elemento con ${tecla} tras ${maximo} pulsaciones`)
 }
 
 /** Con un <select> enfocado, elige la opción escribiendo su texto (búsqueda por teclado). */

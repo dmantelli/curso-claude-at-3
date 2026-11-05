@@ -39,3 +39,9 @@ test('el contador detecta cualquier uso del ratón', async ({ page }) => {
   await page.locator('#boton').click()
   expect(await usos_de_raton(page)).toBeGreaterThan(0)
 })
+
+test('tab_hasta admite Shift+Tab para retroceder', async ({ page }) => {
+  await tab_hasta(page, page.locator('#cat'))
+  await tab_hasta(page, page.locator('#nombre'), 1, 'Shift+Tab')
+  await expect(page.locator('#nombre')).toBeFocused()
+})
