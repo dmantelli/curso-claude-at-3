@@ -97,3 +97,29 @@ describe('DishFormComponent - encabezados y enlace de volver', () => {
     expect(iconos.every(i => i.getAttribute('aria-hidden') === 'true')).toBe(true)
   })
 })
+
+describe('DishFormComponent - envío por teclado', () => {
+  it('es un <form> con un botón de envío "Guardar"', async () => {
+    const { el } = await crearFormulario()
+    const boton = el.querySelector<HTMLButtonElement>('form button[type="submit"]')
+    expect(boton?.textContent?.trim()).toBe('Guardar')
+  })
+
+  it('el evento submit del formulario (Enter en un campo) llama a onSubmit()', async () => {
+    const { fixture, el } = await crearFormulario()
+    const espia = vi.spyOn(fixture.componentInstance, 'onSubmit').mockResolvedValue()
+    el.querySelector('form')!.dispatchEvent(new Event('submit'))
+    expect(espia).toHaveBeenCalledTimes(1)
+  })
+
+  it('"Cancelar" es un enlace enfocable a la lista de platos', async () => {
+    const { el } = await crearFormulario()
+    const cancelar = Array.from(el.querySelectorAll('a')).find(a => a.textContent?.trim() === 'Cancelar')
+    expect(cancelar?.getAttribute('href')).toBe('/restaurants/r1/dishes')
+  })
+
+  it('las acciones del formulario no son div.btn clicables', async () => {
+    const { el } = await crearFormulario()
+    expect(el.querySelector('.form-actions div.btn')).toBeNull()
+  })
+})
