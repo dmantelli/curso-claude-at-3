@@ -68,3 +68,32 @@ describe('DishFormComponent - etiquetas', () => {
     expect(el.querySelector('.fake-label')).toBeNull()
   })
 })
+
+describe('DishFormComponent - encabezados y enlace de volver', () => {
+  it('tiene un h1 con el título de la página', async () => {
+    const { el } = await crearFormulario()
+    expect(el.querySelector('h1')?.textContent?.trim()).toBe('Nuevo plato')
+  })
+
+  it('tiene un h2 "Ingredientes del plato"', async () => {
+    const { el } = await crearFormulario()
+    expect(el.querySelector('h2')?.textContent?.trim()).toBe('Ingredientes del plato')
+  })
+
+  it('no quedan títulos falsos (fake-title / fake-subtitle)', async () => {
+    const { el } = await crearFormulario()
+    expect(el.querySelector('.fake-title, .fake-subtitle')).toBeNull()
+  })
+
+  it('el enlace de volver tiene nombre accesible', async () => {
+    const { el } = await crearFormulario()
+    expect(el.querySelector('a.back-link')?.getAttribute('aria-label')).toBe('Volver a la lista de platos')
+  })
+
+  it('los iconos decorativos están ocultos a los lectores de pantalla', async () => {
+    const { el } = await crearFormulario()
+    const iconos = Array.from(el.querySelectorAll('lucide-icon'))
+    expect(iconos.length).toBeGreaterThan(0)
+    expect(iconos.every(i => i.getAttribute('aria-hidden') === 'true')).toBe(true)
+  })
+})
