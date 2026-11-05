@@ -62,7 +62,7 @@ Hacer accesible el formulario de creación/edición de platos de `web-admin` seg
 - [x] 9. Presentación de errores: test de que, con el formulario inválido enviado, los campos tienen `aria-invalid="true"` y `aria-describedby` apuntando a un mensaje con `id`, y de que el formulario tiene `novalidate`; se muestran mensajes de texto (no solo color) y se limpian al corregir (`.html`, `.ts`, `.css`, ~10 min)
 - [x] 10. Gestión del foco y resumen de errores: test de que tras enviar inválido el foco pasa a un resumen de errores (`role="alert"`, `tabindex="-1"`) con enlaces a cada campo erróneo, y de que activar un enlace enfoca el campo (`.html`, `.ts`, ~10 min)
 - [x] 11. Mensajes dinámicos: test de que el error de API y el aviso de ingrediente duplicado/cantidad inválida se anuncian (`role="alert"` / `aria-live="polite"`), de que el botón Guardar tiene `aria-busy`/`disabled` mientras guarda y de que añadir/quitar un ingrediente actualiza una región `role="status"` ("Ingrediente X añadido") (`.html`, `.ts`, ~10 min)
-- [ ] 12. Orden de tabulación lógico: test que recorre los elementos enfocables del formulario y comprueba el orden (volver → nombre → precio → categoría → disponible → descripción → quitar ingredientes → select → cantidad → añadir → cancelar → guardar), sin `tabindex` positivo (`.spec.ts`, `.html`, ~7 min)
+- [x] 12. Orden de tabulación lógico: test que recorre los elementos enfocables del formulario y comprueba el orden (volver → nombre → precio → categoría → disponible → descripción → quitar ingredientes → select → cantidad → añadir → cancelar → guardar), sin `tabindex` positivo (`.spec.ts`, `.html`, ~7 min)
 
 **Foco visible, contraste y tamaño (WCAG 2.2: 2.4.7, 2.4.11, 1.4.3, 1.4.11, 2.5.8) — verificados en navegador real**
 

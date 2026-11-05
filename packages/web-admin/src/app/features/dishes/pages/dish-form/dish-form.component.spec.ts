@@ -387,3 +387,39 @@ describe('DishFormComponent - mensajes dinámicos', () => {
     expect(boton.textContent?.trim()).toBe('Guardando...')
   })
 })
+
+describe('DishFormComponent - orden de tabulación', () => {
+  const FOCALIZABLES = 'a[href], button, input, select, textarea, [tabindex]'
+
+  function nombre(e: Element): string {
+    return e.getAttribute('aria-label') || e.id || e.textContent?.trim() || ''
+  }
+
+  it('el orden de tabulación sigue el orden visual y lógico del formulario', async () => {
+    const { fixture, el } = await crearFormulario()
+    await anadirIngrediente(fixture, el, 'i1', 2)
+    const orden = Array.from(el.querySelectorAll(FOCALIZABLES))
+      .filter(e => e.getAttribute('tabindex') !== '-1' && !(e as HTMLButtonElement).disabled)
+      .map(nombre)
+    expect(orden).toEqual([
+      'Volver a la lista de platos',
+      'dish-name',
+      'dish-price',
+      'dish-category',
+      'dish-available',
+      'dish-description',
+      'Quitar Tomate (kg)',
+      'new-ingredient',
+      'new-ingredient-qty',
+      'Añadir ingrediente',
+      'Cancelar',
+      'Guardar'
+    ])
+  })
+
+  it('no hay ningún tabindex positivo', async () => {
+    const { el } = await crearFormulario()
+    const positivos = Array.from(el.querySelectorAll('[tabindex]')).filter(e => Number(e.getAttribute('tabindex')) > 0)
+    expect(positivos).toEqual([])
+  })
+})
