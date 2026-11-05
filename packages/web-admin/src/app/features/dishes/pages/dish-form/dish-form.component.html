@@ -9,7 +9,7 @@
   </div>
 
   @if (error()) {
-    <div class="alert-error">{{ error() }}</div>
+    <div class="alert-error" role="alert">{{ error() }}</div>
   }
 
   @if (resumenErrores().length > 0) {
@@ -22,6 +22,8 @@
       </ul>
     </div>
   }
+
+  <div class="sr-only" role="status" aria-live="polite">{{ estado() }}</div>
 
   <form class="card form-card" novalidate (ngSubmit)="onSubmit()">
     <div class="form-grid">
@@ -98,7 +100,7 @@
 
     <div class="form-actions">
       <a class="btn btn-secondary" [routerLink]="listUrl">Cancelar</a>
-      <button type="submit" class="btn btn-primary">
+      <button type="submit" class="btn btn-primary" [disabled]="loading()" [attr.aria-busy]="loading() ? 'true' : null">
         @if (loading()) {
           Guardando...
         } @else {

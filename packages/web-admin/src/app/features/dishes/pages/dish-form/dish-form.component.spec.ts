@@ -326,3 +326,64 @@ describe('DishFormComponent - resumen de errores y foco', () => {
     expect(document.activeElement).toBe(controlDeEtiqueta(el, 'Precio'))
   })
 })
+
+describe('DishFormComponent - mensajes dinámicos', () => {
+  const estado = (el: HTMLElement) => el.querySelector('[role="status"]')
+
+  it('hay una región de estado vacía y educada (aria-live polite) desde el inicio', async () => {
+    const { el } = await crearFormulario()
+    expect(estado(el)?.getAttribute('aria-live')).toBe('polite')
+    expect(estado(el)?.textContent?.trim()).toBe('')
+  })
+
+  it('añadir un ingrediente lo anuncia en la región de estado', async () => {
+    const { fixture, el } = await crearFormulario()
+    await anadirIngrediente(fixture, el, 'i1', 2)
+    expect(estado(el)?.textContent?.trim()).toBe('Ingrediente Tomate (kg) añadido')
+  })
+
+  it('quitar un ingrediente lo anuncia en la región de estado', async () => {
+    const { fixture, el } = await crearFormulario()
+    await anadirIngrediente(fixture, el, 'i1', 2)
+    el.querySelector<HTMLButtonElement>('button[aria-label="Quitar Tomate (kg)"]')!.click()
+    fixture.detectChanges()
+    await fixture.whenStable()
+    expect(estado(el)?.textContent?.trim()).toBe('Ingrediente Tomate (kg) quitado')
+  })
+
+  it('un ingrediente duplicado se avisa en la región de estado', async () => {
+    const { fixture, el } = await crearFormulario()
+    await anadirIngrediente(fixture, el, 'i1', 2)
+    await anadirIngrediente(fixture, el, 'i1', 3)
+    expect(estado(el)?.textContent?.trim()).toBe('El ingrediente Tomate (kg) ya está en el plato')
+    expect(fixture.componentInstance.form.ingredients.length).toBe(1)
+  })
+
+  it('añadir sin ingrediente o con cantidad inválida se avisa', async () => {
+    const { fixture, el } = await crearFormulario()
+    await anadirIngrediente(fixture, el, '', 1)
+    expect(estado(el)?.textContent?.trim()).toBe('Selecciona un ingrediente y una cantidad mayor que 0')
+  })
+
+  it('un error de la API se muestra en un elemento role="alert"', async () => {
+    const { fixture, el, store } = await crearFormulario()
+    store.create.mockRejectedValue({ error: { message: 'El plato ya existe' } })
+    fixture.componentInstance.form.name = 'Tarta'
+    fixture.componentInstance.form.price = 4
+    await fixture.componentInstance.onSubmit()
+    fixture.detectChanges()
+    await fixture.whenStable()
+    const alerta = Array.from(el.querySelectorAll('[role="alert"]')).find(a => a.textContent?.includes('El plato ya existe'))
+    expect(alerta).toBeTruthy()
+  })
+
+  it('mientras guarda, el botón Guardar está ocupado y deshabilitado', async () => {
+    const { fixture, el } = await crearFormulario()
+    fixture.componentInstance.loading.set(true)
+    fixture.detectChanges()
+    const boton = el.querySelector<HTMLButtonElement>('button[type="submit"]')!
+    expect(boton.getAttribute('aria-busy')).toBe('true')
+    expect(boton.disabled).toBe(true)
+    expect(boton.textContent?.trim()).toBe('Guardando...')
+  })
+})

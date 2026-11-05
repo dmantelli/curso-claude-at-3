@@ -35,6 +35,7 @@ export class DishFormComponent implements OnInit {
   loading = signal(false)
   error = signal<string | null>(null)
   errors = signal<FormErrors>({})
+  estado = signal('')
 
   readonly resumenErrores = computed(() => {
     const e = this.errors()
@@ -111,14 +112,22 @@ export class DishFormComponent implements OnInit {
   }
 
   addIngredient(): void {
-    if (!this.newIngredientId || this.newIngredientQty <= 0) return
+    if (!this.newIngredientId || !(this.newIngredientQty > 0)) {
+      this.estado.set('Selecciona un ingrediente y una cantidad mayor que 0')
+      return
+    }
+    const nombre = this.getIngredientName(this.newIngredientId)
     const exists = this.form.ingredients.find(i => i.ingredientId === this.newIngredientId)
-    if (exists) return
+    if (exists) {
+      this.estado.set(`El ingrediente ${nombre} ya está en el plato`)
+      return
+    }
 
     this.form.ingredients = [
       ...this.form.ingredients,
       { ingredientId: this.newIngredientId, quantity: this.newIngredientQty }
     ]
+    this.estado.set(`Ingrediente ${nombre} añadido`)
     this.newIngredientId = ''
     this.newIngredientQty = 1
   }
@@ -129,6 +138,7 @@ export class DishFormComponent implements OnInit {
   }
 
   removeIngredient(ingredientId: string): void {
+    this.estado.set(`Ingrediente ${this.getIngredientName(ingredientId)} quitado`)
     this.form.ingredients = this.form.ingredients.filter(i => i.ingredientId !== ingredientId)
   }
 
