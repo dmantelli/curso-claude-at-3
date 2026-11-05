@@ -123,3 +123,35 @@ describe('DishFormComponent - envío por teclado', () => {
     expect(el.querySelector('.form-actions div.btn')).toBeNull()
   })
 })
+
+describe('DishFormComponent - añadir ingrediente', () => {
+  it('el botón es un <button type="button"> con nombre accesible', async () => {
+    const { el } = await crearFormulario()
+    const boton = el.querySelector('button[aria-label="Añadir ingrediente"]')
+    expect(boton?.getAttribute('type')).toBe('button')
+  })
+
+  it('el select y la cantidad tienen etiqueta asociada', async () => {
+    const { el } = await crearFormulario()
+    expect(controlDeEtiqueta(el, 'Ingrediente')?.tagName).toBe('SELECT')
+    expect(controlDeEtiqueta(el, 'Cantidad')?.tagName).toBe('INPUT')
+  })
+
+  it('activar el botón añade el ingrediente seleccionado', async () => {
+    const { fixture, el } = await crearFormulario()
+    fixture.componentInstance.newIngredientId = 'i1'
+    fixture.componentInstance.newIngredientQty = 2
+    el.querySelector<HTMLButtonElement>('button[aria-label="Añadir ingrediente"]')!.click()
+    expect(fixture.componentInstance.form.ingredients).toEqual([{ ingredientId: 'i1', quantity: 2 }])
+  })
+
+  it('Enter en la cantidad añade el ingrediente sin enviar el formulario', async () => {
+    const { fixture, el } = await crearFormulario()
+    fixture.componentInstance.newIngredientId = 'i2'
+    fixture.componentInstance.newIngredientQty = 1
+    const evento = new KeyboardEvent('keydown', { key: 'Enter', cancelable: true, bubbles: true })
+    controlDeEtiqueta(el, 'Cantidad')!.dispatchEvent(evento)
+    expect(evento.defaultPrevented).toBe(true)
+    expect(fixture.componentInstance.form.ingredients).toEqual([{ ingredientId: 'i2', quantity: 1 }])
+  })
+})

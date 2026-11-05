@@ -107,6 +107,11 @@ export class DishFormComponent implements OnInit {
     this.newIngredientQty = 1
   }
 
+  onEnterCantidad(event: Event): void {
+    event.preventDefault()
+    this.addIngredient()
+  }
+
   removeIngredient(ingredientId: string): void {
     this.form.ingredients = this.form.ingredients.filter(i => i.ingredientId !== ingredientId)
   }
