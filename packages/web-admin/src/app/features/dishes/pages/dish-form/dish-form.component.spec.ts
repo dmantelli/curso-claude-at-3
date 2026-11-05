@@ -242,3 +242,46 @@ describe('DishFormComponent - validación en cliente', () => {
     expect(fixture.componentInstance.errors()).toEqual({})
   })
 })
+
+describe('DishFormComponent - presentación de errores', () => {
+  async function enviarVacio() {
+    const ctx = await crearFormulario()
+    await ctx.fixture.componentInstance.onSubmit()
+    ctx.fixture.detectChanges()
+    await ctx.fixture.whenStable()
+    return ctx
+  }
+
+  it('el formulario desactiva la validación nativa (novalidate)', async () => {
+    const { el } = await crearFormulario()
+    expect(el.querySelector('form')?.hasAttribute('novalidate')).toBe(true)
+  })
+
+  it('sin errores los campos no están marcados como inválidos', async () => {
+    const { el } = await crearFormulario()
+    expect(el.querySelector('[aria-invalid]')).toBeNull()
+  })
+
+  it.each([
+    ['Nombre del plato', 'El nombre es obligatorio'],
+    ['Precio', 'El precio debe ser mayor que 0']
+  ])('el campo "%s" inválido tiene aria-invalid y un mensaje de texto asociado', async (etiqueta, mensaje) => {
+    const { el } = await enviarVacio()
+    const campo = controlDeEtiqueta(el, etiqueta)!
+    expect(campo.getAttribute('aria-invalid')).toBe('true')
+    const idMensaje = campo.getAttribute('aria-describedby')!
+    expect(el.querySelector(`#${idMensaje}`)?.textContent?.trim()).toBe(mensaje)
+  })
+
+  it('el error de un campo desaparece al corregirlo', async () => {
+    const { fixture, el } = await enviarVacio()
+    const nombre = controlDeEtiqueta(el, 'Nombre del plato') as HTMLInputElement
+    nombre.value = 'Tarta'
+    nombre.dispatchEvent(new Event('input'))
+    fixture.detectChanges()
+    await fixture.whenStable()
+    expect(nombre.hasAttribute('aria-invalid')).toBe(false)
+    expect(nombre.hasAttribute('aria-describedby')).toBe(false)
+    expect(controlDeEtiqueta(el, 'Precio')?.getAttribute('aria-invalid')).toBe('true')
+  })
+})

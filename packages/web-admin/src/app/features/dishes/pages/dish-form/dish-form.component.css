@@ -131,3 +131,13 @@ select.form-control {
   white-space: nowrap;
   border: 0;
 }
+
+.field-error {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--red);
+}
+
+input[aria-invalid='true'] {
+  border-color: var(--red);
+}

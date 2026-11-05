@@ -134,6 +134,16 @@ export class DishFormComponent implements OnInit {
     return errors
   }
 
+  onCampoCambia(): void {
+    const actuales = this.errors()
+    if (Object.keys(actuales).length === 0) return
+    const nuevos = this.validate()
+    this.errors.set({
+      ...(actuales.name && nuevos.name ? { name: nuevos.name } : {}),
+      ...(actuales.price && nuevos.price ? { price: nuevos.price } : {})
+    })
+  }
+
   async onSubmit(): Promise<void> {
     this.error.set(null)
     const errors = this.validate()
