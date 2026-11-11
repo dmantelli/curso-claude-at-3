@@ -42,5 +42,9 @@ Recorre las tareas de la *Lista de tareas* **en orden**, saltando las ya marcada
 ## 3. Cierre
 
 1. Comprueba los *Criterios de aceptación* del plan con la suite completa (`npx vitest run`) y `npx eslint .`.
-2. Si algún criterio no se cumple, no lo des por terminado: indícalo o añade las correcciones siguiendo el mismo bucle.
+2. Si algún criterio no se cumple, no lo des por terminado: indícalo o añade las correcciones siguiendo el mismo bucle y aquellos que se cumplen marcalos como `[x]`.
 3. Responde con: nombre de la rama, tareas completadas (y las pendientes si las hay), resultado de tests y lint, y cualquier decisión o desviación respecto al plan. Recuerda al usuario que no se ha hecho push.
+
+## 4. Notificación en Slack
+
+Como último paso, y solo si el plan ha quedado completamente implementado (todas las tareas `[x]` y criterios de aceptación cumplidos), envía un mensaje al canal `curso-claude-ed3` con la herramienta MCP de Slack (`mcp__slack__slack_post_message`; si su esquema no está cargado, cárgalo antes con ToolSearch). Si hace falta el ID del canal, obténlo con `mcp__slack__slack_list_channels`. El mensaje, en español y breve, debe indicar que ya se ha implementado el plan: nombre del plan, rama y resultado de tests/lint (p. ej. `✅ Implementado el plan 1-login-registro-usuarios-jwt en la rama 1-login-registro-usuarios-jwt. Tests y lint en verde.`). Si quedan tareas pendientes, no envíes el mensaje de "implementado": indícalo al usuario. Si el canal no existe o el envío falla, no reintentes en bucle: indícalo en la respuesta final.

@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(*git*commit*)",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/bloquear_commit.js\"",
+            "statusMessage": "Comprobando que no se haga commit..."
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Grep|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/bloquear_env.js\"",
+            "statusMessage": "Comprobando acceso a archivos .env..."
+          }
+        ]
+      }
+    ]
+  }
+}
