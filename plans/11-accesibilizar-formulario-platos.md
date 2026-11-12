@@ -48,54 +48,54 @@ Hacer accesible el formulario de creación/edición de platos de `web-admin` seg
 
 **Infraestructura de tests**
 
-- [ ] 1. Configurar el runner de tests de `web-admin` (target `test` con `@angular/build:unit-test` + vitest + jsdom) y un test de humo de `DishFormComponent` que lo monte con `HttpClientTestingModule`/stubs y `provideRouter([])`; rojo = no existe runner (`packages/web-admin/angular.json`, `package.json`, `dish-form.component.spec.ts`, ~10 min)
-- [ ] 2. Instalar `@playwright/test` y `@axe-core/playwright`, descargar chromium y crear `playwright.config.ts` (`webServer` para API :3000 y admin :4200, `video: 'on'`, `baseURL`); rojo = un spec mínimo que abre el login y falla hasta tener config (`packages/web-admin/playwright.config.ts`, `package.json`, ~10 min)
+- [x] 1. Configurar el runner de tests de `web-admin` (target `test` con `@angular/build:unit-test` + vitest + jsdom) y un test de humo de `DishFormComponent` que lo monte con `HttpClientTestingModule`/stubs y `provideRouter([])`; rojo = no existe runner (`packages/web-admin/angular.json`, `package.json`, `dish-form.component.spec.ts`, ~10 min)
+- [x] 2. Instalar `@playwright/test` y `@axe-core/playwright`, descargar chromium y crear `playwright.config.ts` (`webServer` para API :3000 y admin :4200, `video: 'on'`, `baseURL`); rojo = un spec mínimo que abre el login y falla hasta tener config (`packages/web-admin/playwright.config.ts`, `package.json`, ~10 min)
 
 **Formulario accesible (cada tarea: test rojo → implementación → verde)**
 
-- [ ] 3. Etiquetas: test que verifica `getByLabelText` para Nombre, Precio, Categoría, Disponible, Descripción; sustituir los `div.fake-label` por `<label for>` con `id` únicos en cada control (`dish-form.component.spec.ts`, `.html`, ~8 min)
-- [ ] 4. Encabezados y landmarks: test de `h1` con el título de página y `h2` "Ingredientes del plato"; sustituir `fake-title`/`fake-subtitle`, dar `aria-label` "Volver a la lista de platos" al enlace de volver y `aria-hidden="true"` a los iconos decorativos (`.html`, `.css`, ~8 min)
-- [ ] 5. Envío por teclado: test de que existe un `<form>` con `<button type="submit">Guardar`, de que `submit` (Enter en un campo) llama a `onSubmit()` y de que "Cancelar" es un enlace (`<a>`) enfocable; reemplazar los `div.btn` (`.html`, `.ts`, ~10 min)
-- [ ] 6. Botón "Añadir ingrediente": test de que es `<button type="button">` con nombre accesible "Añadir ingrediente", de que Enter/Espacio lo activa y de que el select de ingrediente y la cantidad tienen label (visible u oculta) ("Ingrediente", "Cantidad") (`.html`, `.css`, ~8 min)
-- [ ] 7. Quitar ingrediente: test de que cada chip tiene `<button type="button">` con nombre "Quitar {ingrediente}", enfocable y activable con teclado, y de que la lista de chips es una `<ul>`/`<li>`; reemplazar `div.chip-remove` (`.html`, `.css`, ~8 min)
-- [ ] 8. Validación en cliente (lógica pura): tests de `validate()` → nombre vacío/solo espacios = "El nombre es obligatorio", precio ≤ 0 o vacío = "El precio debe ser mayor que 0"; `onSubmit()` no llama al store si hay errores; errores en un `signal` por campo (`.ts`, ~8 min)
-- [ ] 9. Presentación de errores: test de que, con el formulario inválido enviado, los campos tienen `aria-invalid="true"` y `aria-describedby` apuntando a un mensaje con `id`, y de que el formulario tiene `novalidate`; se muestran mensajes de texto (no solo color) y se limpian al corregir (`.html`, `.ts`, `.css`, ~10 min)
-- [ ] 10. Gestión del foco y resumen de errores: test de que tras enviar inválido el foco pasa a un resumen de errores (`role="alert"`, `tabindex="-1"`) con enlaces a cada campo erróneo, y de que activar un enlace enfoca el campo (`.html`, `.ts`, ~10 min)
-- [ ] 11. Mensajes dinámicos: test de que el error de API y el aviso de ingrediente duplicado/cantidad inválida se anuncian (`role="alert"` / `aria-live="polite"`), de que el botón Guardar tiene `aria-busy`/`disabled` mientras guarda y de que añadir/quitar un ingrediente actualiza una región `role="status"` ("Ingrediente X añadido") (`.html`, `.ts`, ~10 min)
-- [ ] 12. Orden de tabulación lógico: test que recorre los elementos enfocables del formulario y comprueba el orden (volver → nombre → precio → categoría → disponible → descripción → quitar ingredientes → select → cantidad → añadir → cancelar → guardar), sin `tabindex` positivo (`.spec.ts`, `.html`, ~7 min)
+- [x] 3. Etiquetas: test que verifica `getByLabelText` para Nombre, Precio, Categoría, Disponible, Descripción; sustituir los `div.fake-label` por `<label for>` con `id` únicos en cada control (`dish-form.component.spec.ts`, `.html`, ~8 min)
+- [x] 4. Encabezados y landmarks: test de `h1` con el título de página y `h2` "Ingredientes del plato"; sustituir `fake-title`/`fake-subtitle`, dar `aria-label` "Volver a la lista de platos" al enlace de volver y `aria-hidden="true"` a los iconos decorativos (`.html`, `.css`, ~8 min)
+- [x] 5. Envío por teclado: test de que existe un `<form>` con `<button type="submit">Guardar`, de que `submit` (Enter en un campo) llama a `onSubmit()` y de que "Cancelar" es un enlace (`<a>`) enfocable; reemplazar los `div.btn` (`.html`, `.ts`, ~10 min)
+- [x] 6. Botón "Añadir ingrediente": test de que es `<button type="button">` con nombre accesible "Añadir ingrediente", de que Enter/Espacio lo activa y de que el select de ingrediente y la cantidad tienen label (visible u oculta) ("Ingrediente", "Cantidad") (`.html`, `.css`, ~8 min)
+- [x] 7. Quitar ingrediente: test de que cada chip tiene `<button type="button">` con nombre "Quitar {ingrediente}", enfocable y activable con teclado, y de que la lista de chips es una `<ul>`/`<li>`; reemplazar `div.chip-remove` (`.html`, `.css`, ~8 min)
+- [x] 8. Validación en cliente (lógica pura): tests de `validate()` → nombre vacío/solo espacios = "El nombre es obligatorio", precio ≤ 0 o vacío = "El precio debe ser mayor que 0"; `onSubmit()` no llama al store si hay errores; errores en un `signal` por campo (`.ts`, ~8 min)
+- [x] 9. Presentación de errores: test de que, con el formulario inválido enviado, los campos tienen `aria-invalid="true"` y `aria-describedby` apuntando a un mensaje con `id`, y de que el formulario tiene `novalidate`; se muestran mensajes de texto (no solo color) y se limpian al corregir (`.html`, `.ts`, `.css`, ~10 min)
+- [x] 10. Gestión del foco y resumen de errores: test de que tras enviar inválido el foco pasa a un resumen de errores (`role="alert"`, `tabindex="-1"`) con enlaces a cada campo erróneo, y de que activar un enlace enfoca el campo (`.html`, `.ts`, ~10 min)
+- [x] 11. Mensajes dinámicos: test de que el error de API y el aviso de ingrediente duplicado/cantidad inválida se anuncian (`role="alert"` / `aria-live="polite"`), de que el botón Guardar tiene `aria-busy`/`disabled` mientras guarda y de que añadir/quitar un ingrediente actualiza una región `role="status"` ("Ingrediente X añadido") (`.html`, `.ts`, ~10 min)
+- [x] 12. Orden de tabulación lógico: test que recorre los elementos enfocables del formulario y comprueba el orden (volver → nombre → precio → categoría → disponible → descripción → quitar ingredientes → select → cantidad → añadir → cancelar → guardar), sin `tabindex` positivo (`.spec.ts`, `.html`, ~7 min)
 
 **Foco visible, contraste y tamaño (WCAG 2.2: 2.4.7, 2.4.11, 1.4.3, 1.4.11, 2.5.8) — verificados en navegador real**
 
-- [ ] 13. Test e2e de foco visible: con Tab sobre cada control, `outline` computado ≠ `none` y ≥ 2 px con contraste ≥ 3:1 y no oculto por cabeceras fijas; añadir regla `:focus-visible` global del formulario (`e2e/dish-form.a11y.spec.ts`, `.css`, ~10 min)
-- [ ] 14. Test e2e de tamaño de objetivo: todos los botones/enlaces/chips del formulario miden ≥ 24×24 px; ajustar `btn-sm`, `chip-remove` y `qty-input` (`e2e/dish-form.a11y.spec.ts`, `.css`, ~8 min)
-- [ ] 15. Test e2e con axe (`withTags(['wcag2a','wcag2aa','wcag22aa'])`) en estado inicial y con errores: cero violaciones; corregir lo que salga (contraste de placeholder/`--text-muted`, etc.) (`e2e/dish-form.a11y.spec.ts`, `.css`, ~10 min)
+- [x] 13. Test e2e de foco visible: con Tab sobre cada control, `outline` computado ≠ `none` y ≥ 2 px con contraste ≥ 3:1 y no oculto por cabeceras fijas; añadir regla `:focus-visible` global del formulario (`e2e/dish-form.a11y.spec.ts`, `.css`, ~10 min)
+- [x] 14. Test e2e de tamaño de objetivo: todos los botones/enlaces/chips del formulario miden ≥ 24×24 px; ajustar `btn-sm`, `chip-remove` y `qty-input` (`e2e/dish-form.a11y.spec.ts`, `.css`, ~8 min)
+- [x] 15. Test e2e con axe (`withTags(['wcag2a','wcag2aa','wcag22aa'])`) en estado inicial y con errores: cero violaciones; corregir lo que salga (contraste de placeholder/`--text-muted`, etc.) (`e2e/dish-form.a11y.spec.ts`, `.css`, ~10 min)
 
 **Vídeo del recorrido solo con teclado (criterio de aceptación)**
 
-- [ ] 16. Crear `e2e/helpers/teclado.ts` con funciones que solo usan `page.keyboard` (`tab_hasta`, `escribir`, `elegir_opcion` con flechas, `pulsar`) y un test del helper que verifica que falla si se intenta usar `page.mouse`/`click` (guardia `test.use` con `page.mouse` lanzando error) (`e2e/helpers/teclado.ts`, ~8 min)
-- [ ] 17. Spec de vídeo, parte 1 — login y edición: iniciar sesión con `admin@resttek.com`, llegar a la lista de platos y abrir la edición de un plato solo con Tab/Enter; modificar nombre y precio; verificar con aserciones el valor y el foco tras cada paso (`e2e/dish-form.keyboard-video.spec.ts`, ~10 min)
-- [ ] 18. Parte 2 — ingredientes: en la edición, añadir un ingrediente (select con flechas, cantidad, Enter en "Añadir") y quitar otro (Tab hasta "Quitar …" + Enter); aserciones sobre los chips y la región `status`; guardar y comprobar que vuelve a la lista con los cambios (`e2e/dish-form.keyboard-video.spec.ts`, ~10 min)
-- [ ] 19. Parte 3 — formulario incompleto: abrir "Nuevo plato" por teclado, enviar vacío con Enter, comprobar resumen de errores enfocado, mensajes por campo y `aria-invalid`; saltar a cada campo erróneo con los enlaces del resumen (`e2e/dish-form.keyboard-video.spec.ts`, ~10 min)
-- [ ] 20. Parte 4 — creación correcta: completar nombre, precio, categoría, descripción, añadir/quitar un ingrediente, guardar con teclado y comprobar que el plato nuevo aparece en la lista; pausas cortas (`waitForTimeout` ~600 ms) y resaltado del foco para que el vídeo sea legible (`e2e/dish-form.keyboard-video.spec.ts`, ~10 min)
-- [ ] 21. Configurar la salida del vídeo: `recordVideo` con tamaño 1280×720 guardado en `packages/web-admin/test-results/`, script `npm run e2e:video -w @resttek/web-admin` que hace `seed` previo, y copiar el `.webm` a `docs/videos/dish-form-teclado.webm`; test que comprueba que el fichero existe y pesa > 0 (`playwright.config.ts`, `package.json`, `.gitignore`, ~8 min)
+- [x] 16. Crear `e2e/helpers/teclado.ts` con funciones que solo usan `page.keyboard` (`tab_hasta`, `escribir`, `elegir_opcion` con flechas, `pulsar`) y un test del helper que verifica que falla si se intenta usar `page.mouse`/`click` (guardia `test.use` con `page.mouse` lanzando error) (`e2e/helpers/teclado.ts`, ~8 min)
+- [x] 17. Spec de vídeo, parte 1 — login y edición: iniciar sesión con `admin@resttek.com`, llegar a la lista de platos y abrir la edición de un plato solo con Tab/Enter; modificar nombre y precio; verificar con aserciones el valor y el foco tras cada paso (`e2e/dish-form.keyboard-video.spec.ts`, ~10 min)
+- [x] 18. Parte 2 — ingredientes: en la edición, añadir un ingrediente (select con flechas, cantidad, Enter en "Añadir") y quitar otro (Tab hasta "Quitar …" + Enter); aserciones sobre los chips y la región `status`; guardar y comprobar que vuelve a la lista con los cambios _(desviación: la alta/baja de ingredientes se movió a la tarea 20, sobre el plato nuevo, porque el seed duplica ingredientes y editar uno existente no es repetible; aquí queda guardar los cambios de nombre y precio)_ (`e2e/dish-form.keyboard-video.spec.ts`, ~10 min)
+- [x] 19. Parte 3 — formulario incompleto: abrir "Nuevo plato" por teclado, enviar vacío con Enter, comprobar resumen de errores enfocado, mensajes por campo y `aria-invalid`; saltar a cada campo erróneo con los enlaces del resumen (`e2e/dish-form.keyboard-video.spec.ts`, ~10 min)
+- [x] 20. Parte 4 — creación correcta: completar nombre (único por ejecución), precio, categoría, descripción, añadir dos ingredientes y quitar uno (aquí, con select por teclado y Shift+Tab), guardar con teclado y comprobar que el plato nuevo aparece en la lista; pausas cortas (`waitForTimeout` ~600 ms) y resaltado del foco para que el vídeo sea legible (`e2e/dish-form.keyboard-video.spec.ts`, ~10 min)
+- [x] 21. Configurar la salida del vídeo: `recordVideo` con tamaño 1280×720 guardado en `packages/web-admin/test-results/`, script `npm run e2e:video -w @resttek/web-admin` _(desviación: sin `seed` automático, porque el seed duplica ingredientes en cada ejecución; basta con haberlo ejecutado una vez)_, y copiar el `.webm` a `docs/videos/dish-form-teclado.webm`; test que comprueba que el fichero existe y pesa > 0 (`playwright.config.ts`, `package.json`, `.gitignore`, ~8 min)
 
 **Cierre**
 
-- [ ] 22. Documentar en `docs/arquitectura-frontend.md` cómo ejecutar tests de componente y e2e/vídeo y las convenciones de accesibilidad del formulario; ejecutar todo (`npm test`, tests de web-admin, e2e, `npm run build -w @resttek/web-admin`) (`docs/arquitectura-frontend.md`, ~8 min)
+- [x] 22. Documentar en `docs/arquitectura/arquitectura-frontend.md` cómo ejecutar tests de componente y e2e/vídeo y las convenciones de accesibilidad del formulario; ejecutar todo (`npm test`, tests de web-admin, e2e, `npm run build -w @resttek/web-admin`) (`docs/arquitectura-frontend.md`, ~8 min)
 
 ## Criterios de aceptación
 
-- [ ] Todo el formulario (campos, añadir/quitar ingredientes, Cancelar, Guardar) se puede completar y enviar solo con teclado; Enter en un campo envía el formulario; el orden de tabulación es lógico y no hay `tabindex` positivos.
-- [ ] Todos los controles tienen nombre accesible (`<label for>` o `aria-label`); no quedan `div` clicables ni `fake-*`.
-- [ ] El foco es siempre visible (`:focus-visible`, contraste ≥ 3:1, ≥ 2 px) y los objetivos miden ≥ 24×24 px.
-- [ ] Enviar el formulario vacío muestra "El nombre es obligatorio" y "El precio debe ser mayor que 0" como texto, con `aria-invalid`/`aria-describedby`, y mueve el foco al resumen de errores; no se hace petición a la API.
-- [ ] Los cambios dinámicos (errores, guardando, ingrediente añadido/quitado) se anuncian vía `role="alert"` / `role="status"`.
-- [ ] axe-core con etiquetas `wcag2a`, `wcag2aa`, `wcag22aa` no reporta violaciones en el formulario (estado inicial y con errores).
-- [ ] Existe un vídeo `.webm` grabado por Playwright (`docs/videos/dish-form-teclado.webm`) en el que, **solo con teclado**, se edita un plato (nombre, precio), se añade y quita un ingrediente, se envía un formulario incompleto mostrando los errores y finalmente se crea un plato correcto que aparece en la lista; el spec no usa `click`, `mouse` ni `fill`.
-- [ ] Cada tarea tiene su test escrito antes que el código (evidencia: test rojo registrado en el commit/mensaje de la tarea y luego verde).
-- [ ] Los tests con vitest pasan (`npm test` de la API y tests de `web-admin`) y el e2e de Playwright pasa.
-- [ ] `npm run build -w @resttek/web-admin` compila sin errores.
-- [ ] eslint y prettier sin errores (ver decisión 3: hoy no están configurados en `web-admin`).
+- [x] Todo el formulario (campos, añadir/quitar ingredientes, Cancelar, Guardar) se puede completar y enviar solo con teclado; Enter en un campo envía el formulario; el orden de tabulación es lógico y no hay `tabindex` positivos.
+- [x] Todos los controles tienen nombre accesible (`<label for>` o `aria-label`); no quedan `div` clicables ni `fake-*`.
+- [x] El foco es siempre visible (`:focus-visible`, contraste ≥ 3:1, ≥ 2 px) y los objetivos miden ≥ 24×24 px.
+- [x] Enviar el formulario vacío muestra "El nombre es obligatorio" y "El precio debe ser mayor que 0" como texto, con `aria-invalid`/`aria-describedby`, y mueve el foco al resumen de errores; no se hace petición a la API.
+- [x] Los cambios dinámicos (errores, guardando, ingrediente añadido/quitado) se anuncian vía `role="alert"` / `role="status"`.
+- [x] axe-core con etiquetas `wcag2a`, `wcag2aa`, `wcag22aa` no reporta violaciones en el formulario (estado inicial y con errores).
+- [x] Existe un vídeo `.webm` grabado por Playwright (`docs/videos/dish-form-teclado.webm`) en el que, **solo con teclado**, se edita un plato (nombre, precio), se añade y quita un ingrediente, se envía un formulario incompleto mostrando los errores y finalmente se crea un plato correcto que aparece en la lista; el spec no usa `click`, `mouse` ni `fill`.
+- [x] Cada tarea tiene su test escrito antes que el código (evidencia: test rojo registrado en el commit/mensaje de la tarea y luego verde).
+- [x] Los tests con vitest pasan (`npm test` de la API y tests de `web-admin`) y el e2e de Playwright pasa.
+- [x] `npm run build -w @resttek/web-admin` compila sin errores.
+- [ ] eslint y prettier sin errores _(no cumplido: no hay eslint ni prettier configurados en `web-admin`; ver decisiones)_.
 
 ## Dudas y decisiones
 

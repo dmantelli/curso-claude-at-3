@@ -1,32 +1,51 @@
 <div class="fade-in">
   <div class="page-header">
     <div class="header-back">
-      <a [routerLink]="listUrl" class="back-link">
+      <a [routerLink]="listUrl" class="back-link" aria-label="Volver a la lista de platos">
         <lucide-icon name="chevron-left" [size]="18"></lucide-icon>
       </a>
-      <div class="fake-title">{{ pageTitle }}</div>
+      <h1>{{ pageTitle }}</h1>
     </div>
   </div>
 
   @if (error()) {
-    <div class="alert-error">{{ error() }}</div>
+    <div class="alert-error" role="alert">{{ error() }}</div>
   }
 
-  <div class="card form-card">
+  @if (resumenErrores().length > 0) {
+    <div id="resumen-errores" class="alert-error" role="alert" tabindex="-1">
+      <h2>Revisa el formulario</h2>
+      <ul>
+        @for (e of resumenErrores(); track e.id) {
+          <li><a [href]="'#' + e.id" (click)="enfocarCampo($event, e.id)">{{ e.mensaje }}</a></li>
+        }
+      </ul>
+    </div>
+  }
+
+  <div class="sr-only" role="status" aria-live="polite">{{ estado() }}</div>
+
+  <form class="card form-card" novalidate (ngSubmit)="onSubmit()">
     <div class="form-grid">
       <div class="form-group">
-        <div class="fake-label">Nombre del plato</div>
-        <input type="text" class="form-control" [(ngModel)]="form.name" name="name" placeholder="Ensalada César" />
+        <label for="dish-name">Nombre del plato</label>
+        <input type="text" id="dish-name" class="form-control" [(ngModel)]="form.name" (ngModelChange)="onCampoCambia()" name="name" placeholder="Ensalada César" [attr.aria-invalid]="errors().name ? 'true' : null" [attr.aria-describedby]="errors().name ? 'dish-name-error' : null" />
+        @if (errors().name) {
+          <p id="dish-name-error" class="field-error">{{ errors().name }}</p>
+        }
       </div>
 
       <div class="form-group">
-        <div class="fake-label">Precio (€)</div>
-        <input type="number" class="form-control" [(ngModel)]="form.price" name="price" />
+        <label for="dish-price">Precio (€)</label>
+        <input type="number" id="dish-price" class="form-control" [(ngModel)]="form.price" (ngModelChange)="onCampoCambia()" name="price" [attr.aria-invalid]="errors().price ? 'true' : null" [attr.aria-describedby]="errors().price ? 'dish-price-error' : null" />
+        @if (errors().price) {
+          <p id="dish-price-error" class="field-error">{{ errors().price }}</p>
+        }
       </div>
 
       <div class="form-group">
-        <div class="fake-label">Categoría</div>
-        <select class="form-control" [(ngModel)]="form.category" name="category">
+        <label for="dish-category">Categoría</label>
+        <select id="dish-category" class="form-control" [(ngModel)]="form.category" name="category">
           @for (c of categories; track c) {
             <option [value]="c">{{ getCategoryLabel(c) }}</option>
           }
@@ -34,58 +53,60 @@
       </div>
 
       <div class="form-group">
-        <div class="fake-label">Disponible</div>
-        <select class="form-control" [(ngModel)]="form.available" name="available">
+        <label for="dish-available">Disponible</label>
+        <select id="dish-available" class="form-control" [(ngModel)]="form.available" name="available">
           <option [ngValue]="true">Sí</option>
           <option [ngValue]="false">No</option>
         </select>
       </div>
 
       <div class="form-group form-full">
-        <div class="fake-label">Descripción (opcional)</div>
-        <textarea class="form-control" [(ngModel)]="form.description" name="description" rows="3" placeholder="Una deliciosa ensalada con..."></textarea>
+        <label for="dish-description">Descripción (opcional)</label>
+        <textarea id="dish-description" class="form-control" [(ngModel)]="form.description" name="description" rows="3" placeholder="Una deliciosa ensalada con..."></textarea>
       </div>
     </div>
 
     <div class="ingredients-section">
-      <div class="fake-subtitle">Ingredientes del plato</div>
+      <h2>Ingredientes del plato</h2>
 
       @if (form.ingredients.length > 0) {
-        <div class="ingredient-chips">
+        <ul class="ingredient-chips">
           @for (ing of form.ingredients; track ing.ingredientId) {
-            <div class="ingredient-chip">
+            <li class="ingredient-chip">
               <span>{{ getIngredientName(ing.ingredientId) }} — {{ ing.quantity }}</span>
-              <div class="chip-remove" (click)="removeIngredient(ing.ingredientId)">
+              <button type="button" class="chip-remove" [attr.aria-label]="'Quitar ' + getIngredientName(ing.ingredientId)" (click)="removeIngredient(ing.ingredientId)">
                 <lucide-icon name="trash-2" [size]="12"></lucide-icon>
-              </div>
-            </div>
+              </button>
+            </li>
           }
-        </div>
+        </ul>
       }
 
       <div class="add-ingredient-row">
-        <select class="form-control" [(ngModel)]="newIngredientId" name="newIngredientId">
+        <label for="new-ingredient" class="sr-only">Ingrediente</label>
+        <select id="new-ingredient" class="form-control" [(ngModel)]="newIngredientId" name="newIngredientId">
           <option value="">Seleccionar ingrediente</option>
           @for (i of ingredientStore.ingredients(); track i.id) {
             <option [value]="i.id">{{ i.name }} ({{ i.unit }})</option>
           }
         </select>
-        <input type="number" class="form-control qty-input" [(ngModel)]="newIngredientQty" name="newIngredientQty" placeholder="Cant." />
-        <div class="btn btn-secondary btn-sm" (click)="addIngredient()">
+        <label for="new-ingredient-qty" class="sr-only">Cantidad</label>
+        <input type="number" id="new-ingredient-qty" class="form-control qty-input" [(ngModel)]="newIngredientQty" name="newIngredientQty" placeholder="Cant." (keydown.enter)="onEnterCantidad($event)" />
+        <button type="button" class="btn btn-secondary btn-sm" aria-label="Añadir ingrediente" (click)="addIngredient()">
           <lucide-icon name="plus" [size]="14"></lucide-icon>
-        </div>
+        </button>
       </div>
     </div>
 
     <div class="form-actions">
-      <div class="btn btn-secondary" [routerLink]="listUrl">Cancelar</div>
-      <div class="btn btn-primary" (click)="onSubmit()">
+      <a class="btn btn-secondary" [routerLink]="listUrl">Cancelar</a>
+      <button type="submit" class="btn btn-primary" [disabled]="loading()" [attr.aria-busy]="loading() ? 'true' : null">
         @if (loading()) {
           Guardando...
         } @else {
           Guardar
         }
-      </div>
+      </button>
     </div>
-  </div>
+  </form>
 </div>

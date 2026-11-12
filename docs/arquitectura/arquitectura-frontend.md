@@ -392,3 +392,26 @@ El sistema de diseño es **dark mode** e incluye:
 > | `web-empleados/src/styles.css` | copia con 46 líneas propias añadidas |
 >
 > En la práctica hay **cuatro copias del design system** y el fichero de `web-shared` es código muerto. Al tocar un estilo común hay que replicarlo en las tres apps, o se desincronizan.
+
+## Tests y accesibilidad en `web-admin`
+
+`web-admin` es el único frontend con tests. Hay dos niveles:
+
+| Nivel | Comando (desde la raíz) | Qué cubre |
+| --- | --- | --- |
+| Componentes (Vitest + jsdom, `@angular/build:unit-test`) | `npm test -w @resttek/web-admin` | Semántica, ARIA, validación y foco de `DishFormComponent` (`*.spec.ts` junto al componente) |
+| E2E (Playwright + axe-core) | `npm run e2e -w @resttek/web-admin` | Foco visible, tamaño de objetivos, auditoría WCAG 2.2 AA y recorrido por teclado (`packages/web-admin/e2e/`) |
+
+Notas para ejecutar el e2e:
+
+- Requiere Chromium (`npx playwright install chromium`) y haber ejecutado `npm run seed` al menos una vez. **El seed duplica ingredientes en cada ejecución**, así que no lo lances en cada prueba.
+- Levanta su propia API (puerto **3100**) y su propio `ng serve` (puerto **4300**, con `proxy.e2e.conf.json`) y no reutiliza servidores ya abiertos. Así no choca con el puerto 3000 si otro proyecto lo está usando.
+- `npm run e2e:video -w @resttek/web-admin` graba el recorrido completo solo con teclado y copia el vídeo a `docs/videos/dish-form-teclado.webm`. El test falla si algún evento de ratón llega a la página (`registrar_uso_de_raton`). Cada ejecución crea un plato nuevo ("Plato accesible <timestamp>") y edita el primero de la lista.
+- La auditoría axe se limita a `app-dish-form`; la barra lateral del shell tiene violaciones propias (contraste de `.nav-section-label` y `.user-role`, botón de cerrar sesión sin nombre) que quedan fuera del issue.
+
+### Convenciones de accesibilidad del formulario de platos
+
+- Cada control tiene `<label for>` (visible, o con clase `.sr-only` si el diseño no lo muestra). No se usan `div` clicables: acciones con `<button type="button">` o `<a>`, y el envío con `<button type="submit">` dentro de un `<form>` (Enter envía).
+- La validación es de cliente (`validate()`): campos con `aria-invalid` y `aria-describedby` hacia un mensaje de texto, y un resumen `#resumen-errores` (`role="alert"`, `tabindex="-1"`) que recibe el foco al enviar con errores y enlaza a cada campo.
+- Los cambios dinámicos (ingrediente añadido, quitado o duplicado) se anuncian en una región `role="status"`; el error de la API usa `role="alert"` y Guardar muestra `aria-busy` mientras guarda.
+- El foco visible (`:focus-visible`, 3 px, contraste ≥ 3:1) y el tamaño mínimo de 24×24 px están en `dish-form.component.css` porque los estilos globales ponen `outline: none`. Los errores usan `--red-text` (`#f87171`) para llegar a contraste 4,5:1.
