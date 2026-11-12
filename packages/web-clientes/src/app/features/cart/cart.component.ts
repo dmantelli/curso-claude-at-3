@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core'
 import { Router, RouterLink } from '@angular/router'
 import { DecimalPipe } from '@angular/common'
 import { CartStore } from '../../core/store/cart.store'
+import { TableStore } from '../../core/store/table.store'
 import { OrderService } from '../../core/services/order.service'
 
 @Component({
@@ -172,6 +173,7 @@ export class CartComponent {
   readonly cartStore = inject(CartStore)
   private readonly orderService = inject(OrderService)
   private readonly router = inject(Router)
+  private readonly tableStore = inject(TableStore)
 
   readonly loading = signal(false)
   readonly error = signal<string | null>(null)
@@ -198,6 +200,12 @@ export class CartComponent {
     const restaurantId = this.cartStore.restaurantId()
     if (!restaurantId || this.cartStore.items().length === 0) return
 
+    const table = this.tableStore.table()
+    if (!table || !this.tableStore.hasTableFor(restaurantId)) {
+      this.router.navigate(['/restaurants', restaurantId, 'mesas'])
+      return
+    }
+
     this.loading.set(true)
     this.error.set(null)
 
@@ -207,13 +215,13 @@ export class CartComponent {
       notes: item.notes || null
     }))
 
-    this.orderService.createOrder(restaurantId, items).subscribe({
+    this.orderService.createOrder(restaurantId, table.id, items).subscribe({
       next: (order) => {
         this.cartStore.clear()
         this.router.navigate(['/orders', order.id])
       },
       error: (err) => {
-        this.error.set('Error al confirmar el pedido. Inténtalo de nuevo.')
+        this.error.set(err?.error?.message || 'Error al confirmar el pedido. Inténtalo de nuevo.')
         this.loading.set(false)
       }
     })

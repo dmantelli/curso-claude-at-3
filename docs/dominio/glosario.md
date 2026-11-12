@@ -16,12 +16,23 @@ Terminología del dominio y conceptos técnicos utilizados en el proyecto Restte
 | **Ingredient** | Ingrediente utilizado en los platos. Tiene nombre, unidad de medida y stock actual. Pertenece a un restaurante. |
 | **DishIngredient** | Relación entre un plato y un ingrediente, con la cantidad necesaria. |
 | **Order** | Pedido realizado por un cliente. Contiene ítems (platos) y está asociado a un restaurante. |
+| **Table** (Mesa) | Mesa de un restaurante, con número (único por restaurante), descripción, capacidad y estado. |
 | **OrderItem** | Línea de un pedido: un plato con cantidad, notas opcionales y estado. |
 
 Dos particularidades del modelo que conviene tener presentes:
 
 - **Los clientes son `Employee`.** No hay entidad ni tabla de clientes: un cliente es una fila de `employees` con `role = 'cliente'` y `restaurant_id = null`. Por eso el login es el mismo endpoint para todos y la respuesta se llama `employee` incluso al registrarse como cliente.
 - **Cada unidad pedida es un `OrderItem`.** Al crear un pedido con 3 unidades de un plato se generan 3 filas con `quantity: 1`, para que cocina pueda marcar el estado de cada una por separado.
+
+### Estados de Mesa
+
+| Estado | Descripción | Quién lo cambia |
+| --- | --- | --- |
+| **libre** | Mesa disponible para sentarse (estado inicial). | admin, empleados |
+| **ocupada** | Mesa en uso. El cliente la ocupa al elegirla y continuar a la carta. | cliente (`occupy`), empleados |
+| **reservada** | Mesa apartada manualmente. No hay gestión de reservas (fecha/cliente). | admin, empleados |
+
+La mesa **no** se libera automáticamente al terminar el pedido: la liberan los empleados cambiando su estado.
 
 ### Roles
 

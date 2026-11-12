@@ -2,7 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { OrderService } from './order.service.js'
 import { MockOrderRepository } from '@repositories/mocks/MockOrderRepository.js'
 import type { Order } from '@models/order.model.js'
-import { OrderNotFoundError, InvalidOrderStatusError } from '@errors/DomainErrors.js'
+import { MockTableRepository } from '@repositories/mocks/MockTableRepository.js'
+import { OrderNotFoundError, InvalidOrderStatusError, InvalidTableError } from '@errors/DomainErrors.js'
 
 describe('OrderService.updateItemStatus', () => {
     let repo: MockOrderRepository
@@ -11,7 +12,7 @@ describe('OrderService.updateItemStatus', () => {
 
     beforeEach(async () => {
         repo = new MockOrderRepository()
-        service = new OrderService(repo)
+        service = new OrderService(repo, new MockTableRepository())
 
         testOrder = {
             id: 'order-1',
@@ -45,5 +46,48 @@ describe('OrderService.updateItemStatus', () => {
     it('should throw DomainError if status is invalid', async () => {
         await expect(service.updateItemStatus('order-1', 'item-1', 'invalid-status'))
             .rejects.toThrow(InvalidOrderStatusError)
+    })
+})
+
+describe('OrderService.create (mesas)', () => {
+    let repo: MockOrderRepository
+    let tables: MockTableRepository
+    let service: OrderService
+
+    const request = (tableId: string | null) => ({
+        restaurantId: 'rest-1',
+        tableId,
+        clientId: 'c1',
+        items: [{ dishId: 'd1', quantity: 2, notes: null }]
+    })
+
+    beforeEach(async () => {
+        repo = new MockOrderRepository()
+        tables = new MockTableRepository()
+        service = new OrderService(repo, tables)
+        await tables.save({ id: 't1', restaurantId: 'rest-1', number: 7, description: '', capacity: 4, status: 'ocupada' })
+        await tables.save({ id: 't2', restaurantId: 'rest-2', number: 1, description: '', capacity: 4, status: 'ocupada' })
+    })
+
+    it('crea el pedido con una mesa válida del restaurante', async () => {
+        const order = await service.create(request('t1'))
+        expect(order.tableId).toBe('t1')
+        expect(order.items).toHaveLength(2)
+        expect(repo.orders).toHaveLength(1)
+    })
+
+    it('rechaza una mesa inexistente con InvalidTableError', async () => {
+        await expect(service.create(request('nope'))).rejects.toThrow(InvalidTableError)
+        expect(repo.orders).toHaveLength(0)
+    })
+
+    it('rechaza una mesa de otro restaurante con InvalidTableError', async () => {
+        await expect(service.create(request('t2'))).rejects.toThrow(InvalidTableError)
+        expect(repo.orders).toHaveLength(0)
+    })
+
+    it('sigue permitiendo tableId null', async () => {
+        const order = await service.create(request(null))
+        expect(order.tableId).toBeNull()
     })
 })
