@@ -312,6 +312,11 @@ El lazy loading **no es universal**: `web-clientes` carga `LoginComponent` y `Re
 
 `web-clientes` tampoco define ruta comodín `**`, así que una URL desconocida no muestra un "no encontrado".
 
+### Mesas en los frontends
+
+- **`web-admin`**: feature `features/tables` (lista, alta y edición, borrado) bajo `restaurants/:restaurantId/tables`, con enlace «Mesas» en el submenú y tarjeta en el dashboard del restaurante. `TableStore.create/update` propagan el error para mostrar el 409 de número duplicado en el formulario.
+- **`web-clientes`**: tras elegir restaurante se pasa por `restaurants/:id/mesas` (`TableSelectionComponent`): el cliente indica personas, elige una mesa disponible y «Continuar» la ocupa y navega a la carta. `TableStore` (en `core/`) guarda la mesa elegida; la carta y el carrito redirigen a la selección si no hay mesa, y el pedido envía `tableId`.
+
 ### Filtrado por Rol (web-empleados)
 
 El filtrado por rol se resuelve **de navegación** mediante `computed()` en el `ShellComponent`, que decide qué enlaces se pintan en el menú:
@@ -333,6 +338,8 @@ export class ShellComponent {
     readonly defaultRoute = computed(() => { /* cocinero → /cocina, camarero → /barra */ })
 }
 ```
+
+La página «Mesas» (`/mesas`) es visible para `manager`, `camarero` y `cocinero` (`canSeeMesas`): muestra el estado de cada mesa, permite cambiarlo y lista los pedidos activos de las mesas `ocupada`.
 
 El rol de gerente es `'manager'`, no `'gerente'`. La autorización real es responsabilidad de la API.
 
