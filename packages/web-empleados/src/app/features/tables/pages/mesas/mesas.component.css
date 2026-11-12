@@ -1,0 +1,21 @@
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.page-header h1 { font-size: 24px; font-weight: 600; color: var(--text-primary); }
+.tables-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.table-card { background: var(--bg-card); border: 1px solid var(--border-color); border-left: 4px solid var(--border-color); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.table-card.status-libre { border-left-color: var(--green-light); }
+.table-card.status-ocupada { border-left-color: var(--red); }
+.table-card.status-reservada { border-left-color: var(--yellow); }
+.table-header { display: flex; justify-content: space-between; align-items: center; }
+.table-number { font-weight: 600; font-size: 16px; color: var(--text-primary); }
+.status-pill { font-size: 12px; padding: 4px 10px; border-radius: 20px; background: var(--bg-hover); color: var(--text-secondary); text-transform: capitalize; }
+.status-libre .status-pill { background: var(--green-glow); color: var(--green-light); }
+.status-ocupada .status-pill { background: var(--red-glow); color: var(--red); }
+.status-reservada .status-pill { background: var(--yellow-glow); color: var(--yellow); }
+.table-meta { display: flex; flex-direction: column; gap: 2px; font-size: 13px; color: var(--text-secondary); }
+.table-actions { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); }
+.table-actions select { flex: 1; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 6px 8px; }
+.table-orders h3 { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+.order-block { background: var(--bg-secondary); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 8px; }
+.order-id { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+.order-item { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding-top: 6px; color: var(--text-primary); }
+.muted { font-size: 13px; color: var(--text-muted); }
