@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main, development]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: Build, tests y lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      # Solo ejecuta el script "lint" en los paquetes que lo definan.
+      # Hoy ninguno lo tiene; en cuanto se añada uno, pasará a ser obligatorio.
+      - name: Lint
+        run: npm run lint --workspaces --if-present
+
+      # La API se ejecuta con tsx (no tiene build) y los frontends se compilan con ng build.
+      # web-shared se compila como parte de cada frontend que lo consume.
+      - name: Build de los frontends
+        run: |
+          npm run build --workspace @resttek/web-admin
+          npm run build --workspace @resttek/web-empleados
+          npm run build --workspace @resttek/web-clientes
+
+      # Ejecuta el script "test" de todos los paquetes que lo definan (api: vitest, web-admin: ng test).
+      # Los tests e2e (Playwright) tienen su propio script y no se lanzan aquí.
+      - name: Tests
+        run: npm run test --workspaces --if-present
+
+  revision-docs:
+    name: Claude revisa coherencia con la documentación
+    needs: ci
+    # Los PR de forks no tienen acceso a los secretos
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Claude revisa los cambios frente a docs/ y OpenAPI
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR: ${{ github.event.pull_request.number }}
+
+            Revisa que los cambios de esta pull request siguen en sintonía con la documentación del proyecto.
+
+            1. Obtén los cambios con `gh pr diff ${{ github.event.pull_request.number }}` y `gh pr view ${{ github.event.pull_request.number }}`.
+            2. Lee la documentación relevante: todo lo que haya en la carpeta `docs/` (arquitectura, dominio, modelo de datos, glosario…) y cualquier documento OpenAPI del repositorio (busca `openapi*.yml`, `openapi*.yaml`, `openapi*.json`, `swagger*` con Glob; p. ej. `docs/api/openapi.yml`). Ten también en cuenta `CLAUDE.md`.
+            3. Comprueba si el código de la PR contradice o deja desactualizada esa documentación. Por ejemplo: rutas, parámetros, cuerpos, respuestas, códigos HTTP, validaciones o roles de la API frente a OpenAPI; entidades, campos, estados o roles frente a `modelo-datos.md` y `glosario.md`; estructura de capas o patrones frente a los documentos de arquitectura.
+            4. Si hay discrepancias, publica UN único comentario en la PR con `gh pr comment ${{ github.event.pull_request.number }} --body "..."`, en español, con una lista de lo que no cuadra: qué documento y sección, qué hace el código y qué se debería actualizar (documentación o código). Sé concreto y no inventes problemas.
+            5. Si todo está en sintonía, publica un comentario breve indicándolo. Si la PR no toca nada que afecte a la documentación, dilo también en una línea.
+
+            No modifiques ningún archivo ni hagas commits: solo comenta.
+          claude_args: >-
+            --allowedTools "Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr comment:*),Read,Glob,Grep"
